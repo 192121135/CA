@@ -1,0 +1,61 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+// Function to generate a random number within a given range
+int generateRandomNumber(int min, int max) {
+    return min + rand() % (max - min + 1);
+}
+
+int main() {
+    // Seed the RNG with the current time
+    srand(time(NULL));
+
+    // CACHE_SIZE and NUM_VALUES should be tuned to reflect your cache and data structure.
+    const int CACHE_SIZE = 8;
+    const int NUM_VALUES = 64;
+
+    // Initialize the cache and values arrays
+    int cache[CACHE_SIZE];
+    int values[NUM_VALUES];
+
+    int i, j;
+    int hit = 0;
+    int miss = 0;
+
+    // Fill the values array with random numbers
+    for (i = 0; i < NUM_VALUES; i++) {
+        values[i] = generateRandomNumber(0, NUM_VALUES - 1);
+    }
+
+    // Simulate cache access for each value in the values array
+    for (i = 0; i < NUM_VALUES; i++) {
+        int value = values[i];
+
+        // Check if the value is in the cache
+        int inCache = 0;
+        for (j = 0; j < CACHE_SIZE; j++) {
+            if (cache[j] == value) {
+                inCache = 1;
+                break;
+            }
+        }
+
+        if (inCache) {
+            printf("Cache hit at index %d\n", value);
+            hit++;
+        } else {
+            printf("Cache miss at index %d\n", value);
+            miss++;
+
+            // Update the cache by evicting the oldest value and adding the new value
+            int oldestValueIndex = generateRandomNumber(0, CACHE_SIZE - 1);
+            cache[oldestValueIndex] = value;
+        }
+    }
+
+    printf("Total cache misses: %d\n", miss);
+    printf("Total cache hits: %d\n", hit);
+
+    return 0;
+}
